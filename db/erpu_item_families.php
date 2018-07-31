@@ -55,7 +55,9 @@ if (mysqli_connect_errno())
       $colsDest = array(
           'name',
           'external_id',
-          'is_deleted'
+          'is_deleted',
+          'created_by_id',
+          'updated_by_id'
       );
       $tableDest = "erpu_item_families";
 
@@ -82,7 +84,7 @@ while ($row = mysqli_fetch_array($strSQL))
       $format = "\"" . $row[$i] . "\"";
       $insertes = $insertes .  $format . ", ";
     }
-    mysqli_query($mobcon, "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) .");") or die (mysqli_error($mobcon));
+    mysqli_query($mobcon, "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) .", 1, 1);") or die (mysqli_error($mobcon));
     $contador += 1;
     echo "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) . "); <br>";
 }

@@ -1,14 +1,10 @@
 <?php
-
+ini_set('max_execution_time', 0);
 /**
  * Connect to database Origin
  */
-$webhost        = '192.168.1.233';
-$webusername    = 'root';
-$webpassword    = 'msroot';
-$webdbname      = 'erp';
-$webcon         = mysqli_connect($webhost, $webusername, $webpassword, $webdbname);
-$webcon->set_charset("utf8");
+ include 'connOrigin.php';
+
 if (mysqli_connect_errno())
 {
     echo 'Failed to connect to MySQL: ' . mysqli_connect_error();
@@ -73,7 +69,9 @@ if (mysqli_connect_errno())
         'is_bulk',
         'is_deleted',
         'item_gender_id',
-        'unit_id'
+        'unit_id',
+        'created_by_id',
+        'updated_by_id'
       );
       $tableDest = "erpu_items";
 
@@ -100,11 +98,11 @@ while ($row = mysqli_fetch_array($strSQL))
       $format = "\"" . $row[$i] . "\"";
       $insertes = $insertes .  $format . ", ";
     }
-    mysqli_query($mobcon, "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) .");") or die (mysqli_error($mobcon));
+    mysqli_query($mobcon, "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) .", 1, 1);") or die (mysqli_error($mobcon));
     //if (mysqli_affected_rows ($mobcon)==1){
     //}
     $contador += 1;
-    echo "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) . "); <br>";
+    echo "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) . ", 1, 1); <br>";
 
 }
 

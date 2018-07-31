@@ -18,21 +18,14 @@ if (mysqli_connect_errno())
  * Queries data origin.
  */
       $colsOrigin = array(
-          'igen',
-          'id_igen',
-          'b_len',
-          'b_len_variable',
-          'b_surf',
-          'b_surf_variable',
-          'b_vol',
-          'b_vol_variable',
-          'b_mass',
-          'b_mass_variable',
-          'b_lot',
-          'b_bulk',
-          'b_del'
+        'symbol',
+        'unit',
+        // 'unit_base_equiv',
+        'id_unit',
+        'b_del',
+        'fid_tp_unit'
       );
-      $tableOrigin = "ITMU_IGEN";
+      $tableOrigin = "ITMU_UNIT";
 $allColsOrigin = "";
 // Armar el conjunto de columnas que formaran la query
 foreach ($colsOrigin as $col => $value) {
@@ -44,7 +37,7 @@ foreach ($colsOrigin as $col => $value) {
  */
  //concatenar la consulta con las columnas ingresadas anteriormente
  $strSQL = mysqli_query($webcon, 'SELECT ' . substr($allColsOrigin, 0, -2) . ' FROM ' . $tableOrigin);
-echo "<br>". $allColsOrigin;
+
 /**
  * Connect to database destiny
  */
@@ -63,26 +56,16 @@ if (mysqli_connect_errno())
  * Queries data destiny.
  */
       $colsDest = array(
+        'code',
         'name',
         'external_id',
-        'is_length',
-        'is_length_var',
-        'is_surface',
-        'is_surface_var',
-        'is_volume',
-        'is_volume_var',
-        'is_mass',
-        'is_mass_var',
-        'is_lot',
-        'is_bulk',
         'is_deleted',
-        'item_group_id',
-        'item_class_id',
-        'item_type_id',
+        'base_unit_id_opt',
+        'base_unit_equivalence_opt',
         'created_by_id',
         'updated_by_id'
       );
-      $tableDest = "erpu_item_genders";
+      $tableDest = "erpu_units";
 
       $allColsDest = "";
       // Armar el conjunto de columnas que formaran la query
@@ -96,6 +79,8 @@ if (mysqli_connect_errno())
 
 // RUN
 $contador = 0;
+echo "Destino: " . $allColsDest . " <br>";
+echo "Origen: " . $allColsOrigin . " <br>";
 while ($row = mysqli_fetch_array($strSQL))
 {
     foreach($row as $key => $val)
@@ -104,12 +89,14 @@ while ($row = mysqli_fetch_array($strSQL))
     }
     $insertes = "";
     for ($i = 0; $i < (count($row)/2); $i++) {
-      $format = "\"" . $row[$i] . "\"";
-      $insertes = $insertes .  $format . ", ";
+        $format = "\"" . $row[$i] . "\"";
+        $insertes = $insertes .  $format . ", ";
     }
-    mysqli_query($mobcon, "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) .",1,1,1,1,1);") or die (mysqli_error($mobcon));
+    mysqli_query($mobcon, "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) .",1,1,1);") or die (mysqli_error($mobcon));
+    //if (mysqli_affected_rows ($mobcon)==1){
+    //}
     $contador += 1;
-    echo "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) . ",1,1,1,1,1); <br>";
+    echo "INSERT IGNORE INTO " . $tableDest .  "(" . substr($allColsDest, 0, -2) .") VALUES (" . substr($insertes, 0, -2) . ",1,1,1); <br>";
 
 }
 
@@ -139,4 +126,3 @@ else{
 }
 mysqli_close($mobcon);
 mysqli_close($webcon);
-?>
